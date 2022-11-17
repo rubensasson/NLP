@@ -186,3 +186,9 @@ def read_test(file_path, tagged=True) -> List[Tuple[List[str], List[str]]]:
             sentence[TAG].append("~")
             list_of_sentences.append(sentence)
     return list_of_sentences
+
+
+if __name__ == "__main__":
+    path_to_data = 'HW1_wet/data/train2.wtag'
+    threshold = 1
+    print(preprocess_train(path_to_data, threshold))
