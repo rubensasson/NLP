@@ -13,7 +13,7 @@ class FeatureStatistics:
         self.n_total_features = 0  # Total number of features accumulated
 
         # Init all features dictionaries
-        feature_dict_list = ["f100"]  # the feature classes used in the code
+        feature_dict_list = ["f100", "f101", "f102", "f103", "f104", "f105", "f106", "f107"]  # the feature classes used in the code
         self.feature_rep_dict = {fd: OrderedDict() for fd in feature_dict_list}
         '''
         A dictionary containing the counts of each data regarding a feature class. For example in f100, would contain
@@ -42,11 +42,132 @@ class FeatureStatistics:
                     self.tags_counts[cur_tag] += 1
                     self.words_count[cur_word] += 1
 
+                    #f100
                     if (cur_word, cur_tag) not in self.feature_rep_dict["f100"]:
                         self.feature_rep_dict["f100"][(cur_word, cur_tag)] = 1
                     else:
                         self.feature_rep_dict["f100"][(cur_word, cur_tag)] += 1
 
+                    #f101 and f102
+                    if len(cur_word) >= 4:
+                        # for prefix
+                        if (cur_word[0:4], cur_tag) not in self.feature_rep_dict["f102"]:
+                            self.feature_rep_dict["f102"][(cur_word[0:4], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f102"][(cur_word[0:4], cur_tag)] += 1
+                        # for suffix
+                        if (cur_word[-4:], cur_tag) not in self.feature_rep_dict["f101"]:
+                            self.feature_rep_dict["f101"][(cur_word[-4:], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f101"][(cur_word[-4:], cur_tag)] += 1
+
+                    if len(cur_word) >= 3:
+                        # for prefix
+                        if (cur_word[0:3], cur_tag) not in self.feature_rep_dict["f102"]:
+                            self.feature_rep_dict["f102"][(cur_word[0:3], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f102"][(cur_word[0:3], cur_tag)] += 1
+                        # for suffix
+                        if (cur_word[-3:], cur_tag) not in self.feature_rep_dict["f101"]:
+                            self.feature_rep_dict["f101"][(cur_word[-3:], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f101"][(cur_word[-3:], cur_tag)] += 1
+
+                    if len(cur_word) >= 2:
+                        # for prefix
+                        if (cur_word[0:2], cur_tag) not in self.feature_rep_dict["f102"]:
+                            self.feature_rep_dict["f102"][(cur_word[0:2], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f102"][(cur_word[0:2], cur_tag)] += 1
+                        # for suffix
+                        if (cur_word[-2:], cur_tag) not in self.feature_rep_dict["f101"]:
+                            self.feature_rep_dict["f101"][(cur_word[-2:], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f101"][(cur_word[-2:], cur_tag)] += 1
+
+                    if len(cur_word) >= 1:
+                        # for prefix
+                        if (cur_word[0:1], cur_tag) not in self.feature_rep_dict["f102"]:
+                            self.feature_rep_dict["f102"][(cur_word[0:1], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f102"][(cur_word[0:1], cur_tag)] += 1
+                        # for suffix
+                        if (cur_word[-1:], cur_tag) not in self.feature_rep_dict["f101"]:
+                            self.feature_rep_dict["f101"][(cur_word[-1:], cur_tag)] = 1
+                        else:
+                            self.feature_rep_dict["f101"][(cur_word[-1:], cur_tag)] += 1
+
+
+                    if word_idx == 0:
+                        OneWordBack = '*'
+                        TwoTagBack = '*'
+                        OneTagBack = '*'
+
+                    else:
+                        OneWordBack, OneTagBack = split_words[word_idx - 1].split('_')
+
+                    if word_idx == 1:
+                        TwoTagBack = '*'
+
+                    else :
+                        if word_idx != 0:
+                            TwoWordBack, TwoTagBack = split_words[word_idx - 2].split('_')
+
+                    #Build f103
+                    if (TwoTagBack, OneTagBack, cur_tag) not in self.feature_rep_dict['f103']:
+                        self.feature_rep_dict['f103'][(TwoTagBack,OneTagBack,cur_tag)] = 1
+                    else :
+                        self.feature_rep_dict['f103'][(TwoTagBack, OneTagBack, cur_tag)] += 1
+
+                    # Build f104
+                    if (OneTagBack, cur_tag) not in self.feature_rep_dict['f104']:
+                        self.feature_rep_dict['f104'][(OneTagBack, cur_tag)] = 1
+                    else:
+                        self.feature_rep_dict['f104'][(OneTagBack, cur_tag)] += 1
+
+                    # Build f105
+                    if (cur_tag) not in self.feature_rep_dict['f105']:
+                        self.feature_rep_dict['f105'][(cur_tag)] = 1
+                    else:
+                        self.feature_rep_dict['f105'][(cur_tag)] += 1
+
+                    # Build f106
+                    if (OneWordBack, cur_tag) not in self.feature_rep_dict['f106']:
+                        self.feature_rep_dict['f106'][(OneWordBack, cur_tag)] = 1
+                    else:
+                        self.feature_rep_dict['f106'][(OneWordBack, cur_tag)] += 1
+
+                    size = len(split_words) - 1
+
+                    if word_idx <= size:
+                        if word_idx == size:
+                            OneWordForward = '~'
+                        else:
+                            OneWordForward, OneTagForward = split_words[word_idx + 1].split('_')
+                    # Build f107
+                    if (OneWordForward, cur_tag) not in self.feature_rep_dict['f107']:
+                        self.feature_rep_dict['f107'][(OneWordForward, cur_tag)] = 1
+                    else:
+                        self.feature_rep_dict['f107'][(OneWordForward, cur_tag)] += 1
+
+                    """
+                    #build CapitalLetter feature
+                    capital = any(letter.isupper() for letter in cur_word)
+                    if capital == True:
+                        if (cur_word, cur_tag) not in set(self.feature_rep_dict["fCapital"].keys()):
+                            self.feature_rep_dict["fCapital"][(cur_word,cur_tag)] = 1
+                        else :
+                            self.feature_rep_dict["fCapital"][(cur_word, cur_tag)] += 1
+
+                    #build Number feature
+                    number = any(letter.isdigit() for letter in cur_word)
+                    if number == True:
+                        if (cur_word, cur_tag) not in set(self.feature_rep_dict["fNumber"].keys()):
+                            self.feature_rep_dict["fNumber"][(cur_word,cur_tag)] = 1
+                        else :
+                            self.feature_rep_dict["fNumber"][(cur_word, cur_tag)] += 1
+
+                    """
                 sentence = [("*", "*"), ("*", "*")]
                 for pair in split_words:
                     sentence.append(tuple(pair.split("_")))
@@ -60,10 +181,11 @@ class FeatureStatistics:
                     self.histories.append(history)
 
 
+
 class Feature2id:
     def __init__(self, feature_statistics: FeatureStatistics, threshold: int):
         """
-        @param feature_statistics: the feature statistics object
+        @param feature_statistics: the feature statistics object, from here we get histories, dictionary that count tag, word and pair(word, tag) and the feature_dict_list with f100
         @param threshold: the minimal number of appearances a feature should have to be taken
         """
         self.feature_statistics = feature_statistics  # statistics class, for each feature gives empirical counts
@@ -71,11 +193,20 @@ class Feature2id:
 
         self.n_total_features = 0  # Total number of features accumulated
 
-        # Init all features dictionaries
+        # c'est un dictionaire dans lequel on met pour chaque features les index de celle qui apparaissent le plus de fois, (celle ou le nombre de fois est superioeur au Thresold
         self.feature_to_idx = {
-            "f100": OrderedDict(),
+            "f100": OrderedDict(),   #(CurrentWord, CurrentTag)
+            "f101": OrderedDict(),   #(Prefix, CurrentTag)
+            "f102": OrderedDict(),   #(Suffix, CurrentTag)
+            "f103": OrderedDict(),   #(Tag(i-2), Tag(i-1), Tag(i))
+            "f104": OrderedDict(),   #(Tag(i-1), Tag(i))
+            "f105": OrderedDict(),   #(Tag(i))
+            "f106": OrderedDict(),   #(word(i-1), Tag(i))
+            "f107": OrderedDict()   #(word(i+1), Tag(i))
+            #"fCapital" : OrderedDict(),
+            #"fNumber"  : OrderedDict(),
         }
-        self.represent_input_with_features = OrderedDict()
+        self.represent_input_with_features = OrderedDict()    #
         self.histories_matrix = OrderedDict()
         self.histories_features = OrderedDict()
         self.small_matrix = sparse.csr_matrix
@@ -85,6 +216,7 @@ class Feature2id:
         """
         Assigns each feature that appeared enough time in the train files an idx.
         Saves those indices to self.feature_to_idx
+
         """
         for feat_class in self.feature_statistics.feature_rep_dict:
             if feat_class not in self.feature_to_idx:
@@ -136,12 +268,79 @@ def represent_input_with_features(history: Tuple, dict_of_dicts: Dict[str, Dict[
     """
     c_word = history[0]
     c_tag = history[1]
+    OneWordBack = history[2]
+    OneTagBack = history[3]
+    TwoTagBack = history[5]
+    OneWordForward = history[6]
     features = []
 
     # f100
     if (c_word, c_tag) in dict_of_dicts["f100"]:
         features.append(dict_of_dicts["f100"][(c_word, c_tag)])
 
+    #f101 and f102
+    if len(c_word) >=4:
+        FourLetterPrefix = c_word[0:4]
+        FourLetterSuffix = c_word[-4:]
+        if (FourLetterPrefix, c_tag) in dict_of_dicts["f102"]:
+            features.append(dict_of_dicts["f102"][(FourLetterPrefix, c_tag)])
+        if (FourLetterSuffix, c_tag) in dict_of_dicts["f101"]:
+            features.append(dict_of_dicts["f101"][(FourLetterSuffix, c_tag)])
+
+    if len(c_word) >=3:
+        ThreeLetterPrefix = c_word[0:3]
+        ThreeLetterSuffix = c_word[-3:]
+        if (ThreeLetterPrefix, c_tag) in dict_of_dicts["f102"]:
+            features.append(dict_of_dicts["f102"][(ThreeLetterPrefix, c_tag)])
+        if (ThreeLetterSuffix, c_tag) in dict_of_dicts["f101"]:
+            features.append(dict_of_dicts["f101"][(ThreeLetterSuffix, c_tag)])
+
+    if len(c_word) >=2:
+        TwoLetterPrefix = c_word[0:2]
+        TwoLetterSuffix = c_word[-2:]
+        if (TwoLetterPrefix, c_tag) in dict_of_dicts["f102"]:
+            features.append(dict_of_dicts["f102"][(TwoLetterPrefix, c_tag)])
+        if (TwoLetterSuffix, c_tag) in dict_of_dicts["f101"]:
+            features.append(dict_of_dicts["f101"][(TwoLetterSuffix, c_tag)])
+
+    if len(c_word) >=1:
+        OneLetterPrefix = c_word[0:1]
+        OneLetterSuffix = c_word[-1:]
+        if (OneLetterPrefix, c_tag) in dict_of_dicts["f102"]:
+            features.append(dict_of_dicts["f102"][(OneLetterPrefix, c_tag)])
+        if (OneLetterSuffix, c_tag) in dict_of_dicts["f101"]:
+            features.append(dict_of_dicts["f101"][(OneLetterSuffix, c_tag)])
+
+
+
+    #f103
+    if (TwoTagBack, OneTagBack, c_tag) in dict_of_dicts["f103"]:
+        features.append(dict_of_dicts["f103"][(TwoTagBack, OneTagBack, c_tag)])
+
+    #f104
+    if (OneTagBack, c_tag) in dict_of_dicts["f104"]:
+        features.append(dict_of_dicts["f104"][(OneTagBack, c_tag)])
+
+    # f105
+    if (c_tag) in dict_of_dicts["f105"]:
+        features.append(dict_of_dicts["f105"][(c_tag)])
+
+    # f106
+    if (OneWordBack, c_tag) in dict_of_dicts["f106"]:
+        features.append(dict_of_dicts["f106"][(OneWordBack, c_tag)])
+
+    # f107
+    if (OneWordForward, c_tag) in dict_of_dicts["f107"]:
+        features.append(dict_of_dicts["f107"][(OneWordForward, c_tag)])
+    """
+    #fCapital
+    if (c_word, c_tag) in dict_of_dicts["fCapital"]:
+        features.append(dict_of_dicts["fCapital"][(c_word, c_tag)])
+
+    #fNumber
+    if (c_word, c_tag) in dict_of_dicts["fNumber"]:
+        features.append(dict_of_dicts["fNumber"][(c_word, c_tag)])
+    """
     return features
 
 
